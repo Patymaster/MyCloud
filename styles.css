@@ -1,0 +1,240 @@
+/* Reset and basic styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* Add semi-transparent white overlay over background image */
+    background: 
+        linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)),
+        url('./Images/Back.jpg') no-repeat center center fixed;
+    background-size: cover;
+    color: #333;
+    line-height: 1.5;
+}
+
+/* Links */
+a {
+    text-decoration: none;
+    color: #007bff;
+    transition: color 0.3s;
+}
+
+a:hover {
+    color: #0056b3;
+}
+
+/* Cards */
+.card {
+    width: 360px;
+    margin: 120px auto;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    text-align: center;
+    transition: transform 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+}
+
+h2 {
+    margin-bottom: 20px;
+    font-weight: 600;
+    color: #222;
+}
+
+/* Inputs */
+.input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 1em;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0,123,255,0.3);
+    outline: none;
+}
+
+/* Buttons / Кнопки */
+.btn {
+    width: 100%;
+    padding: 12px;
+    background: #007bff;
+    border: none;
+    color: white;
+    font-size: 1em;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+    margin-top: 10px;
+}
+
+.btn:hover {
+    background: #0056b3;
+    transform: translateY(-2px);
+}
+
+.btn-red {
+    background: #dc3545;
+}
+
+.btn-red:hover {
+    background: #c82333;
+}
+
+/* Small buttons */
+.btn-sm, .btn-sm-red, a.btn-sm, a.btn-sm-red {
+    display: inline-block; /* Make links behave like buttons */
+    padding: 6px 12px;
+    font-size: 0.9em;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-left: 5px;
+    text-align: center;
+    text-decoration: none;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.btn-sm, a.btn-sm {
+    background: #007bff;
+    color: white;
+    border: none;
+}
+
+.btn-sm:hover, a.btn-sm:hover {
+    background: #0056b3;
+    transform: translateY(-1px);
+}
+
+.btn-sm-red, a.btn-sm-red {
+    background: #dc3545;
+    color: white;
+    border: none;
+}
+
+.btn-sm-red:hover, a.btn-sm-red:hover {
+    background: #c82333;
+    transform: translateY(-1px);
+}
+
+/* Errors */
+.error {
+    color: #dc3545;
+    margin-top: 8px;
+    font-size: 0.9em;
+}
+
+/* App container */
+#app-container {
+    width: 700px;
+    margin: 50px auto;
+}
+
+/* Top bar */
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+/* Upload box */
+.upload-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* File list */
+.file-list {
+    margin-top: 20px;
+}
+
+.file-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 10px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin-bottom: 12px;
+}
+
+.file-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.file-item div b {
+    display: block;
+    font-size: 1em;
+    margin-bottom: 4px;
+    color: #222;
+}
+
+.file-item div small {
+    color: #666;
+}
+
+/* Empty list */
+.empty {
+    text-align: center;
+    color: #888;
+    padding: 20px;
+    font-style: italic;
+}
+
+/* Hidden elements */
+.hidden {
+    display: none;
+}
+
+/* Paragraphs */
+p {
+    margin-top: 10px;
+    font-size: 0.9em;
+}
+#logout {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 10px;
+    background: transparent;
+    color: #dc3545;
+    border: 2px solid #dc3545;
+    border-radius: 50px;         
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+#logout:hover {
+    background: #dc3545;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(220, 53, 69, 0.3);
+}
+
+#logout::before {
+    content: "↗";                 
+    font-size: 1.3em;
+    transform: rotate(90deg);
+}

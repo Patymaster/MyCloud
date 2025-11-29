@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<title>MyCloud</title>
+<link rel="stylesheet" href="/styles.css"> <!-- served by Express -->
+</head>
+<body>
+
+<div id="auth-container" class="card">
+    <h2 id="auth-title">Вхід</h2>
+    <input id="username" class="input" placeholder="Ім'я користувача">
+    <input id="password" class="input" type="password" placeholder="Пароль">
+    <button id="auth-btn" class="btn">Увійти</button>
+    <p><a href="#" id="toggle-auth">Немає акаунта? Реєстрація</a></p>
+    <p id="auth-error" class="error"></p>
+</div>
+
+<div id="app-container" class="hidden">
+    <div class="topbar">
+        <h2>Мої файли</h2>
+        <button id="logout" class="btn-red">Вийти</button>
+    </div>
+    <div class="upload-box">
+        <input type="file" id="fileInput">
+        <button id="uploadBtn" class="btn">Завантажити</button>
+    </div>
+    <div id="file-list" class="file-list"></div>
+</div>
+
+<script>
+// !!! Change this to your Azure Web App URL after deployment
+const API = window.location.origin; // dynamic host
+
+let isLogin = true;
+
+// Toggle between Login/Register
+document.getElementById("toggle-auth").onclick = () => {
+    isLogin = !isLogin;
+    document.getElementById("auth-title").innerText = isLogin ? "Вхід" : "Реєстрація";
+    document.getElementById("auth-btn").innerText = isLogin ? "Увійти" : "Створити акаунт";
+    document.getElementById("toggle-auth").innerText = isLogin ? "Немає акаунта? Реєстрація" : "Є акаунт? Увійти";
+};
+
+// Login / Register
+document.getElementById("auth-btn").onclick = async () => {
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const errorEl = document.getElementById("auth-error");
+    if (!username || !password) return errorEl.innerText = "Введіть дані";
+
+    const endpoint = isLogin ? "/login" : "/register";
+    const res = await fetch(API + endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+    });
+    const data = await res.json();
+    if (!res.ok) return errorEl.innerText = data.error || "Помилка";
+
+    if (isLogin) {
+        localStorage.setItem("token", data.token);
+        document.getElementById("auth-container").classList.add("hidden");
+        document.getElementById("app-container").classList.remove("hidden");
+        loadFiles();
+    } else {
+        alert("Реєстрація успішна! Тепер увійдіть");
+        isLogin = true;
+        document.getElementById("auth-title").innerText = "Вхід";
+        document.getElementById("auth-btn").innerText = "Увійти";
+        document.getElementById("toggle-auth").innerText = "Немає акаунта? Реєстрація";
+    }
+};
+
+// Upload file
+document.getElementById("uploadBtn").onclick = async () => {
+    const fileInput = document.getElementById("fileInput");
+    if (!fileInput.files.length) return alert("Виберіть файл!");
+
+    const formData = new FormData();
+    formData.append("file", fileInput.files[0]);
+
+    const res = await fetch(API + "/upload", {
+        method: "POST",
+        headers: { Authorization: localStorage.getItem("token") },
+        body: formData
+    });
+
+    const data = await res.json();
+    if (!res.ok) return alert(data.error || "Помилка завантаження");
+
+    fileInput.value = "";
+    loadFiles();
+};
+
+// Load file list
+async function loadFiles() {
+    const res = await fetch(API + "/files", {
+        headers: { Authorization: localStorage.getItem("token") }
+    });
+    const files = await res.json();
+    const list = document.getElementById("file-list");
+    list.innerHTML = "";
+
+    if (!files.length) {
+        list.innerHTML = "<p class='empty'>Немає файлів</p>";
+        return;
+    }
+
+    files.forEach(file => {
+        const div = document.createElement("div");
+        div.className = "file-item";
+
+        div.innerHTML = `
+            <div>
+                <b>${file.name}</b>
+                <small>${Math.round(file.size / 1024)} КБ</small>
+            </div>
+            <div>
+                <button class="btn-sm" onclick="copyLink('${file.url}')">Скопіювати посилання</button>
+                <button class="btn-sm" onclick="window.open('${file.url}', '_blank')">Перегляд</button>
+                <button class="btn-sm-red" onclick="deleteFile(${file.id})">Видалити</button>
+            </div>
+        `;
+        list.appendChild(div);
+    });
+}
+
+// Copy link function
+function copyLink(url) {
+    navigator.clipboard.writeText(url)
+        .then(() => alert("Посилання скопійовано!"))
+        .catch(() => alert("Не вдалося скопіювати посилання"));
+}
+
+// Delete file
+async function deleteFile(id) {
+    if (!confirm("Видалити файл назавжди?")) return;
+    await fetch(API + "/files/" + id, {
+        method: "DELETE",
+        headers: { Authorization: localStorage.getItem("token") }
+    });
+    loadFiles();
+}
+
+// Logout
+document.getElementById("logout").onclick = () => {
+    localStorage.removeItem("token");
+    location.reload();
+};
+
+// Auto login if token exists
+if (localStorage.getItem("token")) {
+    document.getElementById("auth-container").classList.add("hidden");
+    document.getElementById("app-container").classList.remove("hidden");
+    loadFiles();
+}
+</script>
+
+</body>
+</html>
